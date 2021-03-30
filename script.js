@@ -110,22 +110,39 @@ movements.forEach((movement, idx) => {
 // for (const [i, movement] of movements.entries()) {
 // }
 
+// const currencies = new Map([
+//   ['INR', 'Indian R'],
+//   ['USD', 'United States Dollar'],
+//   ['GBP', 'Pound Sterling'],
+//   ['INR', 'Indian Rupee'],
+// ])
 
-const currencies = new Map([
-  ['INR', 'Indian R'],
-  ['USD', 'United States Dollar'],
-  ['GBP', 'Pound Sterling'],
-  ['INR', 'Indian Rupee'],
-])
+// currencies.forEach((value, key, map) => {
+//   console.log(`${key}: ${value}`)
+// })
 
-currencies.forEach((value, key, map) => {
-  console.log(`${key}: ${value}`)
-})
+// const currenciesUnique = new Set([
+//   'USD', 'GBP', 'USD', 'EUR', 'EUR', 'INR', 'INR'
+// ])
 
-const currenciesUnique = new Set([
-  'USD', 'GBP', 'USD', 'EUR', 'EUR', 'INR', 'INR'
-])
+// currenciesUnique.forEach((value, _, map) => {
+//   console.log(`${value}: ${value}`)
+// })
 
-currenciesUnique.forEach((value, _, map) => {
-  console.log(`${value}: ${value}`)
-})
+const displayMovements = (movementsArr) => {
+  containerMovements.innerHTML = ''
+  movementsArr.forEach((mov, i) => {
+    const movementType = mov > 0 ? 'deposit' : 'withdrawal'
+    const html = `
+    <div class="movements">
+      <div class="movements__row">
+        <div class="movements__type movements__type--${movementType}">${i + 1} ${movementType}</div>
+        <div class="movements__value">${mov}</div>
+      </div>
+    </div>
+    `;
+    containerMovements.insertAdjacentHTML('afterbegin', html)
+  })
+}
+
+displayMovements(movements)

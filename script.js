@@ -129,7 +129,7 @@ movements.forEach((movement, idx) => {
 //   console.log(`${value}: ${value}`)
 // })
 
-const displayMovements = (movementsArr) => {
+const displayMovements = movementsArr => {
   containerMovements.innerHTML = ''
   movementsArr.forEach((mov, i) => {
     const movementType = mov > 0 ? 'deposit' : 'withdrawal'
@@ -146,3 +146,26 @@ const displayMovements = (movementsArr) => {
 }
 
 displayMovements(movements)
+
+
+// DATA TRANSFORMATIONS WITH MAP, FILTER AND REDUCE
+// map: returns the new array after applying a specific operation on each original array element
+// filter: returns all array elements that passed a specific test condition
+// reduce: reduces / boils down all elements to a single value.
+
+// const euroToUsd = 1.1
+// const usdMovements = movements.map(mov => mov * euroToUsd)
+// console.log(usdMovements)
+
+const createUsernames = accs => {
+  accs.forEach(acc => 
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+  )
+}
+
+createUsernames(accounts)
+console.log(accounts)

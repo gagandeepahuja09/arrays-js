@@ -186,5 +186,22 @@ createUsernames(accounts)
 //   return acc + curr
 // }, 0)
 
-const maxInvestment = movements.reduce((acc, curr) => acc > curr ? acc : curr, movements[0])
-console.log(maxInvestment)
+// const maxInvestment = movements.reduce((acc, curr) => acc > curr ? acc : curr, movements[0])
+// console.log(maxInvestment)
+
+// Coding Challenge 2
+
+const dogAgesArr = [
+  [5, 2 , 4, 1, 15, 8, 3],
+  [16, 6, 10, 5, 6, 1, 4]
+]
+
+// better to create a new one than mutating actual array
+// the power of chaining methods
+const calcAverageHumanAge = dogAges =>
+  dogAges
+  .map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
+  .filter(dogAge => dogAge >= 18)
+  .reduce((sum, age, _, arr) => sum + age / arr.length, 0)
+
+console.log(calcAverageHumanAge(dogAgesArr[0]), calcAverageHumanAge(dogAgesArr[1]))

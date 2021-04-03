@@ -147,6 +147,12 @@ const displayMovements = movementsArr => {
 
 displayMovements(movements)
 
+const calcDisplayBalance = movements => {
+  const balance = movements.reduce((acc, curr) => acc + curr, 0)
+  labelBalance.textContent = `${balance} EUR`
+}
+calcDisplayBalance(movements)
+
 
 // DATA TRANSFORMATIONS WITH MAP, FILTER AND REDUCE
 // map: returns the new array after applying a specific operation on each original array element
@@ -168,4 +174,17 @@ const createUsernames = accs => {
 }
 
 createUsernames(accounts)
-console.log(accounts)
+// console.log(accounts)
+
+// const deposits = movements.filter(mov => mov > 0)
+// console.log(deposits)
+
+// Other use cases of reduce
+// const balance = movements.reduce((acc, curr) => {
+//   // we need to return this so that this value can be used in the next iteration
+//   console.log(acc)
+//   return acc + curr
+// }, 0)
+
+const maxInvestment = movements.reduce((acc, curr) => acc > curr ? acc : curr, movements[0])
+console.log(maxInvestment)

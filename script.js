@@ -149,7 +149,7 @@ const displayMovements = movementsArr => {
     <div class="movements">
       <div class="movements__row">
         <div class="movements__type movements__type--${movementType}">${i + 1} ${movementType}</div>
-        <div class="movements__value">${mov}</div>
+        <div class="movements__value">${currencyEuro(mov)}</div>
       </div>
     </div>
     `;
@@ -188,7 +188,7 @@ const calcDisplaySummary = account => {
   const outValue = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, curr) => acc + curr, 0)
-  labelSumOut.textContent = Math.abs(currencyEuro(outValue))
+  labelSumOut.textContent = currencyEuro(Math.abs(outValue))
 
   const creditInterestValue = account.movements
     .filter(mov => mov > 0)
@@ -210,6 +210,8 @@ const updateUI = acc => {
   // populate the balance
   calcDisplayBalance(acc)
 }
+
+// EVENT HANDLERS
 
 // IMPLEMENTING LOGIN
 btnLogin.addEventListener('click', (e) => {
@@ -251,6 +253,37 @@ btnTransfer.addEventListener('click', (e) => {
   updateUI(currentAccount)
 })
 
+// IMPLEMENTING CLOSE ACCOUNT
+btnClose.addEventListener('click', (e) => {
+  e.preventDefault()
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value
+  )) {
+    // in indexOf we can't specify so many constraints as it does not use callback 
+    // eg. indexOf(23)
+    const closeAccountIdx = accounts.findIndex(acc => acc.username === inputCloseUsername.value)
+    // splice
+    accounts.splice(closeAccountIdx, 1)
+    // remove the pin and username
+    inputCloseUsername.value = inputClosePin.value = ''
+    // hide the UI
+    containerApp.style.opacity = '0'
+  }
+})
+
+// IMPLEMENTING REQUEST LOAN
+btnLoan.addEventListener('click', (e) => {
+  e.preventDefault()
+  const loanAmount = Number(inputLoanAmount.value)
+  if (loanAmount > 0 && currentAccount.movements.some(mov => mov >= 0.1 * loanAmount)) {
+    currentAccount.movements.push(loanAmount)
+    updateUI(currentAccount)
+  }
+  inputLoanAmount.value = ''
+})
+
+// if we just want to check for equality then we can use includes else some / every
 
 // console.log(accounts)
 

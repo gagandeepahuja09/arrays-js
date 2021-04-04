@@ -157,9 +157,13 @@ const displayMovements = movementsArr => {
   })
 }
 
-const calcDisplayBalance = movements => {
-  const balance = movements.reduce((acc, curr) => acc + curr, 0)
-  labelBalance.textContent = currencyEuro(balance)
+const calcDisplayBalance = account => {
+  // we have to set the balance for the user so that we can use this property later
+  // for example while transfer
+  // since array is of reference type (heap address stored in variable env)
+  // we can set the balance property
+  account.balance = account.movements.reduce((acc, curr) => acc + curr, 0)
+  labelBalance.textContent = currencyEuro(account.balance)
 }
 
 
@@ -184,7 +188,7 @@ const calcDisplaySummary = account => {
   const outValue = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, curr) => acc + curr, 0)
-  labelSumOut.textContent = currencyEuro(outValue)
+  labelSumOut.textContent = Math.abs(currencyEuro(outValue))
 
   const creditInterestValue = account.movements
     .filter(mov => mov > 0)
@@ -196,12 +200,23 @@ const calcDisplaySummary = account => {
 
 let currentAccount
 
+const updateUI = acc => {
+  // populate the movements
+  displayMovements(acc.movements)
+
+  // populate the in, out and interest
+  calcDisplaySummary(acc)
+
+  // populate the balance
+  calcDisplayBalance(acc)
+}
+
+// IMPLEMENTING LOGIN
 btnLogin.addEventListener('click', (e) => {
   // prevent default behaviour of page reload on submit of form
   // this covers all form cases
   // button click and key press event
   e.preventDefault()
-  console.log('Here123')
 
   // verify the identity of user with pin and username
   currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
@@ -209,20 +224,33 @@ btnLogin.addEventListener('click', (e) => {
   
   // if occurs, then
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    inputLoginUsername.value = inputLoginPin.value = ''
+    // to loose cursor focus
     inputLoginPin.blur()
     // display the screen
     containerApp.style.opacity = '100'
 
-    // populate the movements
-    displayMovements(currentAccount.movements)
-
-    // populate the in, out and interest
-    calcDisplaySummary(currentAccount)
-
-    // populate the balance
-    calcDisplayBalance(currentAccount.movements)
+    updateUI(currentAccount)
   }
 })
+
+// IMPLEMENTING TRANSFERS
+btnTransfer.addEventListener('click', (e) => {
+  e.preventDefault()
+  const toUsername = inputTransferTo.value
+  const transferAmt = Number(inputTransferAmount.value)
+  const toAccount = accounts.find(acc => acc.username === toUsername)
+  if (currentAccount.balance > transferAmt && 
+    transferAmt > 0 &&
+    toAccount &&
+    toAccount.username !== currentAccount.username) {
+    inputTransferAmount.value = inputTransferTo.value = ''
+    toAccount.movements.push(transferAmt)
+    currentAccount.movements.push(-transferAmt)
+  }
+  updateUI(currentAccount)
+})
+
 
 // console.log(accounts)
 

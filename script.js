@@ -96,15 +96,27 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]
 
+const createUsernames = accs => {
+  accs.forEach(acc => 
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+  )
+}
+
+createUsernames(accounts)
+
 // Can't use continue and break with forEach
 // we can specify max 3 parameters in forEach (element, index, array)
-movements.forEach((movement, idx) => {
-  if (movement > 0) {
-    console.log(`Movement ${idx + 1}: You deposited ${movement}`)
-  } else {
-    console.log(`Movement ${idx + 1}: You withdrew ${Math.abs(movement)}`)
-  }
-})
+// movements.forEach((movement, idx) => {
+//   if (movement > 0) {
+//     console.log(`Movement ${idx + 1}: You deposited ${movement}`)
+//   } else {
+//     console.log(`Movement ${idx + 1}: You withdrew ${Math.abs(movement)}`)
+//   }
+// })
 
 // Alternative: Can use for, of
 // for (const [i, movement] of movements.entries()) {
@@ -145,13 +157,10 @@ const displayMovements = movementsArr => {
   })
 }
 
-displayMovements(movements)
-
 const calcDisplayBalance = movements => {
   const balance = movements.reduce((acc, curr) => acc + curr, 0)
-  labelBalance.textContent = `${balance} EUR`
+  labelBalance.textContent = currencyEuro(balance)
 }
-calcDisplayBalance(movements)
 
 
 // DATA TRANSFORMATIONS WITH MAP, FILTER AND REDUCE
@@ -163,17 +172,58 @@ calcDisplayBalance(movements)
 // const usdMovements = movements.map(mov => mov * euroToUsd)
 // console.log(usdMovements)
 
-const createUsernames = accs => {
-  accs.forEach(acc => 
-    acc.username = acc.owner
-      .toLowerCase()
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-  )
+const currencyEuro = string => `${string} €`
+
+const calcDisplaySummary = account => {
+  // labelSumIn
+  const inValue = account.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, curr) => acc + curr, 0)
+  labelSumIn.textContent = currencyEuro(inValue)
+
+  const outValue = account.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, curr) => acc + curr, 0)
+  labelSumOut.textContent = currencyEuro(outValue)
+
+  const creditInterestValue = account.movements
+    .filter(mov => mov > 0)
+    .map(mov => mov * (account.interestRate / 100))
+    .filter(interest => interest >= 1)
+    .reduce((acc, curr) => acc + curr)
+  labelSumInterest.textContent = currencyEuro(creditInterestValue)
 }
 
-createUsernames(accounts)
+let currentAccount
+
+btnLogin.addEventListener('click', (e) => {
+  // prevent default behaviour of page reload on submit of form
+  // this covers all form cases
+  // button click and key press event
+  e.preventDefault()
+  console.log('Here123')
+
+  // verify the identity of user with pin and username
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
+  console.log(currentAccount, currentAccount?.pin, inputLoginPin.value, inputLoginUsername.value)
+  
+  // if occurs, then
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    inputLoginPin.blur()
+    // display the screen
+    containerApp.style.opacity = '100'
+
+    // populate the movements
+    displayMovements(currentAccount.movements)
+
+    // populate the in, out and interest
+    calcDisplaySummary(currentAccount)
+
+    // populate the balance
+    calcDisplayBalance(currentAccount.movements)
+  }
+})
+
 // console.log(accounts)
 
 // const deposits = movements.filter(mov => mov > 0)
@@ -191,17 +241,17 @@ createUsernames(accounts)
 
 // Coding Challenge 2
 
-const dogAgesArr = [
-  [5, 2 , 4, 1, 15, 8, 3],
-  [16, 6, 10, 5, 6, 1, 4]
-]
+// const dogAgesArr = [
+//   [5, 2 , 4, 1, 15, 8, 3],
+//   [16, 6, 10, 5, 6, 1, 4]
+// ]
 
 // better to create a new one than mutating actual array
 // the power of chaining methods
-const calcAverageHumanAge = dogAges =>
-  dogAges
-  .map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
-  .filter(dogAge => dogAge >= 18)
-  .reduce((sum, age, _, arr) => sum + age / arr.length, 0)
+// const calcAverageHumanAge = dogAges =>
+//   dogAges
+//   .map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
+//   .filter(dogAge => dogAge >= 18)
+//   .reduce((sum, age, _, arr) => sum + age / arr.length, 0)
 
-console.log(calcAverageHumanAge(dogAgesArr[0]), calcAverageHumanAge(dogAgesArr[1]))
+// console.log(calcAverageHumanAge(dogAgesArr[0]), calcAverageHumanAge(dogAgesArr[1]))

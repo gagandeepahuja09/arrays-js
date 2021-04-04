@@ -283,6 +283,30 @@ btnLoan.addEventListener('click', (e) => {
   inputLoanAmount.value = ''
 })
 
+// Flat and flatMap
+// They don't mutate the state
+
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8, [9, 10], 11]
+const arr2 = [[[1, 2], 3], [4, [5, 6]], [7, 8, [9, 10], 11]]
+
+const flatArr = arr.flat()
+console.log(flatArr, arr)
+
+const flatArr2 = arr2.flat(2)
+console.log(flatArr2, arr2)
+
+const overallBalance = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, curr) => acc + curr)
+
+// using flatMap 
+const overallBalance2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, curr) => acc + curr)
+
+console.log(overallBalance, overallBalance2)  
+
 // if we just want to check for equality then we can use includes else some / every
 
 // console.log(accounts)
